@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+        - name: {{ .Values.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.port }}
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheckPath }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheckPath }}
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts: []
+      volumes: []
+      imagePullSecrets:
+      {{- range .Values.image.pullSecrets }}
+      - name: {{ . }}
+      {{- end }}
+

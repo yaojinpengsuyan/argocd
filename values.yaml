@@ -1,0 +1,32 @@
+replicaCount: 1
+image:
+  repository: 192.168.218.224:5000/webserver_vue
+  tag: v1
+  pullSecrets: []
+env:
+  MY_ENV_VAR:
+port: 8999
+nodePort: 39000
+service:
+  port: 8080
+healthCheckPath: /data/k8s/health-check
+name: my-helm-demo1
+resources:
+  limits:
+    cpu: "2000m"
+    memory: "4000Mi"
+  requests:
+    cpu: "1500m"
+    memory: "2000Mi"
+# nodeSelector: {}
+# tolerations: []
+# affinity: {}
+rollingUpdate:
+  maxUnavailable: 25%
+  maxSurge: 25%
+serviceAccount:
+  create: true
+ingress:
+  enabled: False
+autoscaling:
+  enabled: False
